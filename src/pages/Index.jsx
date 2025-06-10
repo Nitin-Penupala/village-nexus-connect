@@ -1,8 +1,8 @@
-
 import { useState } from "react";
-import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter } from "lucide-react";
+import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,6 +12,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import AddComplaintDialog from "@/components/AddComplaintDialog";
 import ComplaintCard from "@/components/ComplaintCard";
 
@@ -94,6 +101,18 @@ const Index = () => {
   const [selectedBuilding, setSelectedBuilding] = useState("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  
+  // Quick complaint form state
+  const [quickComplaintType, setQuickComplaintType] = useState("");
+  const [quickComplaintDescription, setQuickComplaintDescription] = useState("");
+  
+  // Current user info (auto-filled)
+  const currentUser = {
+    name: "Sarah Johnson",
+    unit: "A-101",
+    building: "Maple Building",
+    email: "sarah.johnson@email.com"
+  };
 
   const buildings = ["all", ...Array.from(new Set(complaints.map(c => c.building)))];
   
@@ -128,6 +147,27 @@ const Index = () => {
       status: "in-progress"
     };
     setComplaints([...complaints, complaint]);
+  };
+
+  const handleQuickComplaintSubmit = (e) => {
+    e.preventDefault();
+    if (!quickComplaintType || !quickComplaintDescription.trim()) return;
+    
+    const newComplaint = {
+      title: `${quickComplaintType} Issue`,
+      description: quickComplaintDescription,
+      priority: "medium",
+      category: quickComplaintType,
+      residentName: currentUser.name,
+      unit: currentUser.unit,
+      building: currentUser.building,
+      residentEmail: currentUser.email,
+      assignedTo: ""
+    };
+    
+    addComplaint(newComplaint);
+    setQuickComplaintType("");
+    setQuickComplaintDescription("");
   };
 
   const updateComplaint = (updatedComplaint) => {
@@ -188,19 +228,76 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* Search and Filter Bar */}
+        {/* Quick Complaint Submission Bar */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
+          <CardContent className="p-6">
+            <form onSubmit={handleQuickComplaintSubmit} className="space-y-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                  <Input
+                    value={currentUser.name}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Apartment ID</label>
+                  <Input
+                    value={`${currentUser.unit}, ${currentUser.building}`}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Complaint Type</label>
+                  <Select value={quickComplaintType} onValueChange={setQuickComplaintType}>
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Select complaint type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white z-50">
+                      <SelectItem value="Plumbing">Plumbing</SelectItem>
+                      <SelectItem value="Electrical">Electrical</SelectItem>
+                      <SelectItem value="HVAC">HVAC</SelectItem>
+                      <SelectItem value="Mechanical">Mechanical</SelectItem>
+                      <SelectItem value="Noise">Noise</SelectItem>
+                      <SelectItem value="Parking">Parking</SelectItem>
+                      <SelectItem value="Security">Security</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-2 md:flex-[2]">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Complaint Description</label>
+                  <Textarea
+                    value={quickComplaintDescription}
+                    onChange={(e) => setQuickComplaintDescription(e.target.value)}
+                    placeholder="Describe your complaint in detail..."
+                    className="bg-white min-h-[60px]"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button 
+                    type="submit"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={!quickComplaintType || !quickComplaintDescription.trim()}
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Filter Bar */}
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
-                  placeholder="Search complaints, residents, or units..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white"
-                />
-              </div>
               <select
                 value={selectedBuilding}
                 onChange={(e) => setSelectedBuilding(e.target.value)}
@@ -236,10 +333,10 @@ const Index = () => {
               </DropdownMenu>
               <Button 
                 onClick={() => setIsAddDialogOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white ml-auto"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Complaint
+                Add Detailed Complaint
               </Button>
             </div>
           </CardContent>
@@ -270,15 +367,8 @@ const Index = () => {
               <AlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No complaints found</h3>
               <p className="text-gray-600 mb-4">
-                Try adjusting your search terms or add a new complaint to get started.
+                Try adjusting your filters or submit a new complaint using the form above.
               </p>
-              <Button 
-                onClick={() => setIsAddDialogOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add First Complaint
-              </Button>
             </CardContent>
           </Card>
         )}
