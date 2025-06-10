@@ -119,24 +119,24 @@ const Index = () => {
   // Mock current user for "your complaints" filter
   const currentUserEmail = "sarah.johnson@email.com";
 
-  const filteredComplaints = complaints.filter(complaint => {
-    const matchesSearch = complaint.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         complaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         complaint.residentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         complaint.unit.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesBuilding = selectedBuilding === "all" || complaint.building === selectedBuilding;
-    
-    let matchesFilter = true;
+  // First filter based on search term only (since building filter was removed)
+  const visibleComplaints = complaints.filter(complaint => {
+    return complaint.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           complaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           complaint.residentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           complaint.unit.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  // Further filter the visible complaints based on the selected status filter
+  const filteredComplaints = visibleComplaints.filter(complaint => {
     if (selectedFilter === "completed") {
-      matchesFilter = complaint.status === "completed";
+      return complaint.status === "completed";
     } else if (selectedFilter === "in-progress") {
-      matchesFilter = complaint.status === "in-progress";
+      return complaint.status === "in-progress";
     } else if (selectedFilter === "your-complaints") {
-      matchesFilter = complaint.residentEmail === currentUserEmail;
+      return complaint.residentEmail === currentUserEmail;
     }
-    
-    return matchesSearch && matchesBuilding && matchesFilter;
+    return true;
   });
 
   const addComplaint = (newComplaint) => {
@@ -294,60 +294,57 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* Filter Bar */}
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <select
-                value={selectedBuilding}
-                onChange={(e) => setSelectedBuilding(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {buildings.map(building => (
-                  <option key={building} value={building}>
-                    {building === "all" ? "All Buildings" : building}
-                  </option>
-                ))}
-              </select>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="bg-white">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white z-50">
-                  <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
-                    All Complaints
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
-                    Completed Complaints
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedFilter("in-progress")}>
-                    In Progress Complaints
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSelectedFilter("your-complaints")}>
-                    Your Complaints
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button 
-                onClick={() => setIsAddDialogOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white ml-auto"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Detailed Complaint
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
             Showing {filteredComplaints.length} of {complaints.length} complaints
           </p>
         </div>
+
+        {/* New Filter Bar Card relocated here */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <Input 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search complaints..."
+                className="w-full md:w-1/2"
+              />
+              <div className="flex flex-row gap-4 items-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="bg-white">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filter
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-white z-50">
+                    <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+                      All Complaints
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
+                      Completed Complaints
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("in-progress")}>
+                      In Progress Complaints
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("your-complaints")}>
+                      Your Complaints
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button 
+                  onClick={() => setIsAddDialogOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Detailed Complaint
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Complaints Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
