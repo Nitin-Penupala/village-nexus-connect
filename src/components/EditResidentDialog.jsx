@@ -11,17 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Resident } from "@/pages/Index";
 import { toast } from "@/hooks/use-toast";
 
-interface EditResidentDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  resident: Resident;
-  onUpdate: (resident: Resident) => void;
-}
-
-const EditResidentDialog = ({ open, onOpenChange, resident, onUpdate }: EditResidentDialogProps) => {
+const EditResidentDialog = ({ open, onOpenChange, resident, onUpdate }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -48,7 +40,7 @@ const EditResidentDialog = ({ open, onOpenChange, resident, onUpdate }: EditResi
     }
   }, [resident]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     
     if (!formData.name || !formData.email || !formData.unit || !formData.building) {
@@ -60,11 +52,7 @@ const EditResidentDialog = ({ open, onOpenChange, resident, onUpdate }: EditResi
       return;
     }
 
-    onUpdate({
-      ...resident,
-      ...formData,
-    });
-    
+    onUpdate({ ...resident, ...formData });
     onOpenChange(false);
     
     toast({
@@ -73,7 +61,7 @@ const EditResidentDialog = ({ open, onOpenChange, resident, onUpdate }: EditResi
     });
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

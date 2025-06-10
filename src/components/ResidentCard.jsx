@@ -11,23 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Resident } from "@/pages/Index";
 import EditResidentDialog from "./EditResidentDialog";
 
-interface ResidentCardProps {
-  resident: Resident;
-  onUpdate: (resident: Resident) => void;
-  onDelete: (id: string) => void;
-}
-
-const ResidentCard = ({ resident, onUpdate, onDelete }: ResidentCardProps) => {
+const ResidentCard = ({ resident, onUpdate, onDelete }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const getInitials = (name: string) => {
+  const getInitials = (name) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

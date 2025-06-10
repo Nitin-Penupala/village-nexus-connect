@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,20 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AddResidentDialog from "@/components/AddResidentDialog";
 import ResidentCard from "@/components/ResidentCard";
 
-export interface Resident {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  unit: string;
-  building: string;
-  moveInDate: string;
-  emergencyContact: string;
-  emergencyPhone: string;
-  avatar?: string;
-}
-
-const initialResidents: Resident[] = [
+const initialResidents = [
   {
     id: "1",
     name: "Sarah Johnson",
@@ -69,7 +57,7 @@ const initialResidents: Resident[] = [
 ];
 
 const Index = () => {
-  const [residents, setResidents] = useState<Resident[]>(initialResidents);
+  const [residents, setResidents] = useState(initialResidents);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBuilding, setSelectedBuilding] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -84,19 +72,19 @@ const Index = () => {
     return matchesSearch && matchesBuilding;
   });
 
-  const addResident = (newResident: Omit<Resident, "id">) => {
-    const resident: Resident = {
+  const addResident = (newResident) => {
+    const resident = {
       ...newResident,
       id: Date.now().toString()
     };
     setResidents([...residents, resident]);
   };
 
-  const updateResident = (updatedResident: Resident) => {
+  const updateResident = (updatedResident) => {
     setResidents(residents.map(r => r.id === updatedResident.id ? updatedResident : r));
   };
 
-  const deleteResident = (id: string) => {
+  const deleteResident = (id) => {
     setResidents(residents.filter(r => r.id !== id));
   };
 

@@ -11,16 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Resident } from "@/pages/Index";
 import { toast } from "@/hooks/use-toast";
 
-interface AddResidentDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onAdd: (resident: Omit<Resident, "id">) => void;
-}
-
-const AddResidentDialog = ({ open, onOpenChange, onAdd }: AddResidentDialogProps) => {
+const AddResidentDialog = ({ open, onOpenChange, onAdd }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,7 +25,7 @@ const AddResidentDialog = ({ open, onOpenChange, onAdd }: AddResidentDialogProps
     emergencyPhone: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     
     if (!formData.name || !formData.email || !formData.unit || !formData.building) {
@@ -63,7 +56,7 @@ const AddResidentDialog = ({ open, onOpenChange, onAdd }: AddResidentDialogProps
     });
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
