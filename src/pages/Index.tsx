@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Search, Plus, Users, Home, Phone, Mail } from "lucide-react";
+import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -118,16 +117,16 @@ const Index = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <Users className="h-6 w-6 text-blue-600" />
+                <div className="p-3 bg-orange-100 rounded-full">
+                  <AlertCircle className="h-6 w-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Residents</p>
-                  <p className="text-2xl font-bold text-gray-900">{residents.length}</p>
+                  <p className="text-sm text-gray-600">In Progress Complaints</p>
+                  <p className="text-2xl font-bold text-gray-900">{Math.floor(residents.length * 0.3)}</p>
                 </div>
               </div>
             </CardContent>
@@ -137,25 +136,11 @@ const Index = () => {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-green-100 rounded-full">
-                  <Home className="h-6 w-6 text-green-600" />
+                  <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Buildings</p>
-                  <p className="text-2xl font-bold text-gray-900">{buildings.length - 1}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <Mail className="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Occupied Units</p>
-                  <p className="text-2xl font-bold text-gray-900">{residents.length}</p>
+                  <p className="text-sm text-gray-600">Completed Complaints</p>
+                  <p className="text-2xl font-bold text-gray-900">{Math.floor(residents.length * 0.7)}</p>
                 </div>
               </div>
             </CardContent>
