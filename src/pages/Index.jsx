@@ -1,92 +1,145 @@
 
 import { useState } from "react";
-import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle } from "lucide-react";
+import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import AddResidentDialog from "@/components/AddResidentDialog";
-import ResidentCard from "@/components/ResidentCard";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import AddComplaintDialog from "@/components/AddComplaintDialog";
+import ComplaintCard from "@/components/ComplaintCard";
 
-const initialResidents = [
+const initialComplaints = [
   {
     id: "1",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
+    title: "Water Leakage in Bathroom",
+    description: "There is a continuous water leak from the bathroom ceiling causing damage to the floor.",
+    status: "in-progress",
+    priority: "high",
+    category: "Plumbing",
+    createdDate: "2023-11-15",
+    residentName: "Sarah Johnson",
     unit: "A-101",
     building: "Maple Building",
-    moveInDate: "2023-01-15",
-    emergencyContact: "Mike Johnson",
-    emergencyPhone: "(555) 987-6543"
+    residentEmail: "sarah.johnson@email.com",
+    assignedTo: "John Maintenance"
   },
   {
     id: "2",
-    name: "David Chen",
-    email: "david.chen@email.com",
-    phone: "(555) 234-5678",
+    title: "Broken Elevator",
+    description: "The main elevator in the building has been out of order for 3 days.",
+    status: "completed",
+    priority: "high",
+    category: "Mechanical",
+    createdDate: "2023-11-10",
+    residentName: "David Chen",
     unit: "B-205",
     building: "Oak Building",
-    moveInDate: "2022-08-20",
-    emergencyContact: "Lisa Chen",
-    emergencyPhone: "(555) 876-5432"
+    residentEmail: "david.chen@email.com",
+    assignedTo: "Mike Technical"
   },
   {
     id: "3",
-    name: "Maria Rodriguez",
-    email: "maria.rodriguez@email.com",
-    phone: "(555) 345-6789",
+    title: "Noise Complaint",
+    description: "Loud music and noise from the upper floor during night hours.",
+    status: "in-progress",
+    priority: "medium",
+    category: "Noise",
+    createdDate: "2023-11-12",
+    residentName: "Maria Rodriguez",
     unit: "C-302",
     building: "Pine Building",
-    moveInDate: "2023-03-10",
-    emergencyContact: "Carlos Rodriguez",
-    emergencyPhone: "(555) 765-4321"
+    residentEmail: "maria.rodriguez@email.com",
+    assignedTo: "Security Team"
   },
   {
     id: "4",
-    name: "James Wilson",
-    email: "james.wilson@email.com",
-    phone: "(555) 456-7890",
+    title: "Parking Space Issue",
+    description: "Unauthorized vehicle parked in my designated parking spot.",
+    status: "completed",
+    priority: "low",
+    category: "Parking",
+    createdDate: "2023-11-08",
+    residentName: "James Wilson",
     unit: "A-203",
     building: "Maple Building",
-    moveInDate: "2022-11-05",
-    emergencyContact: "Emma Wilson",
-    emergencyPhone: "(555) 654-3210"
+    residentEmail: "james.wilson@email.com",
+    assignedTo: "Security Team"
+  },
+  {
+    id: "5",
+    title: "Air Conditioning Not Working",
+    description: "The AC unit in my apartment stopped working and needs repair.",
+    status: "in-progress",
+    priority: "medium",
+    category: "HVAC",
+    createdDate: "2023-11-14",
+    residentName: "Sarah Johnson",
+    unit: "A-101",
+    building: "Maple Building",
+    residentEmail: "sarah.johnson@email.com",
+    assignedTo: "HVAC Specialist"
   }
 ];
 
 const Index = () => {
-  const [residents, setResidents] = useState(initialResidents);
+  const [complaints, setComplaints] = useState(initialComplaints);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBuilding, setSelectedBuilding] = useState("all");
+  const [selectedFilter, setSelectedFilter] = useState("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const buildings = ["all", ...Array.from(new Set(residents.map(r => r.building)))];
+  const buildings = ["all", ...Array.from(new Set(complaints.map(c => c.building)))];
+  
+  // Mock current user for "your complaints" filter
+  const currentUserEmail = "sarah.johnson@email.com";
 
-  const filteredResidents = residents.filter(resident => {
-    const matchesSearch = resident.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         resident.unit.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         resident.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBuilding = selectedBuilding === "all" || resident.building === selectedBuilding;
-    return matchesSearch && matchesBuilding;
+  const filteredComplaints = complaints.filter(complaint => {
+    const matchesSearch = complaint.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         complaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         complaint.residentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         complaint.unit.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesBuilding = selectedBuilding === "all" || complaint.building === selectedBuilding;
+    
+    let matchesFilter = true;
+    if (selectedFilter === "completed") {
+      matchesFilter = complaint.status === "completed";
+    } else if (selectedFilter === "in-progress") {
+      matchesFilter = complaint.status === "in-progress";
+    } else if (selectedFilter === "your-complaints") {
+      matchesFilter = complaint.residentEmail === currentUserEmail;
+    }
+    
+    return matchesSearch && matchesBuilding && matchesFilter;
   });
 
-  const addResident = (newResident) => {
-    const resident = {
-      ...newResident,
-      id: Date.now().toString()
+  const addComplaint = (newComplaint) => {
+    const complaint = {
+      ...newComplaint,
+      id: Date.now().toString(),
+      createdDate: new Date().toISOString().split('T')[0],
+      status: "in-progress"
     };
-    setResidents([...residents, resident]);
+    setComplaints([...complaints, complaint]);
   };
 
-  const updateResident = (updatedResident) => {
-    setResidents(residents.map(r => r.id === updatedResident.id ? updatedResident : r));
+  const updateComplaint = (updatedComplaint) => {
+    setComplaints(complaints.map(c => c.id === updatedComplaint.id ? updatedComplaint : c));
   };
 
-  const deleteResident = (id) => {
-    setResidents(residents.filter(r => r.id !== id));
+  const deleteComplaint = (id) => {
+    setComplaints(complaints.filter(c => c.id !== id));
   };
+
+  const inProgressCount = complaints.filter(c => c.status === "in-progress").length;
+  const completedCount = complaints.filter(c => c.status === "completed").length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -95,12 +148,12 @@ const Index = () => {
         <div className="text-center mb-8">
           <div className="flex justify-center items-center gap-3 mb-4">
             <div className="p-3 bg-blue-600 rounded-full">
-              <Users className="h-8 w-8 text-white" />
+              <AlertCircle className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900">Community Directory</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Complaint Management</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Welcome to our resident community database. Connect with your neighbors and stay updated with community information.
+            Track and manage all building complaints efficiently. Submit new complaints and monitor their progress.
           </p>
         </div>
 
@@ -114,7 +167,7 @@ const Index = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">In Progress Complaints</p>
-                  <p className="text-2xl font-bold text-gray-900">{Math.floor(residents.length * 0.3)}</p>
+                  <p className="text-2xl font-bold text-gray-900">{inProgressCount}</p>
                 </div>
               </div>
             </CardContent>
@@ -128,7 +181,7 @@ const Index = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Completed Complaints</p>
-                  <p className="text-2xl font-bold text-gray-900">{Math.floor(residents.length * 0.7)}</p>
+                  <p className="text-2xl font-bold text-gray-900">{completedCount}</p>
                 </div>
               </div>
             </CardContent>
@@ -142,7 +195,7 @@ const Index = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
-                  placeholder="Search residents, units, or email..."
+                  placeholder="Search complaints, residents, or units..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-white"
@@ -159,12 +212,34 @@ const Index = () => {
                   </option>
                 ))}
               </select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-white">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filter
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white z-50">
+                  <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+                    All Complaints
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
+                    Completed Complaints
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSelectedFilter("in-progress")}>
+                    In Progress Complaints
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSelectedFilter("your-complaints")}>
+                    Your Complaints
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button 
                 onClick={() => setIsAddDialogOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Resident
+                Add Complaint
               </Button>
             </div>
           </CardContent>
@@ -173,45 +248,45 @@ const Index = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            Showing {filteredResidents.length} of {residents.length} residents
+            Showing {filteredComplaints.length} of {complaints.length} complaints
           </p>
         </div>
 
-        {/* Residents Grid */}
+        {/* Complaints Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredResidents.map((resident) => (
-            <ResidentCard
-              key={resident.id}
-              resident={resident}
-              onUpdate={updateResident}
-              onDelete={deleteResident}
+          {filteredComplaints.map((complaint) => (
+            <ComplaintCard
+              key={complaint.id}
+              complaint={complaint}
+              onUpdate={updateComplaint}
+              onDelete={deleteComplaint}
             />
           ))}
         </div>
 
-        {filteredResidents.length === 0 && (
+        {filteredComplaints.length === 0 && (
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
             <CardContent className="p-12 text-center">
-              <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No residents found</h3>
+              <AlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No complaints found</h3>
               <p className="text-gray-600 mb-4">
-                Try adjusting your search terms or add a new resident to get started.
+                Try adjusting your search terms or add a new complaint to get started.
               </p>
               <Button 
                 onClick={() => setIsAddDialogOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add First Resident
+                Add First Complaint
               </Button>
             </CardContent>
           </Card>
         )}
 
-        <AddResidentDialog
+        <AddComplaintDialog
           open={isAddDialogOpen}
           onOpenChange={setIsAddDialogOpen}
-          onAdd={addResident}
+          onAdd={addComplaint}
         />
       </div>
     </div>
