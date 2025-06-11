@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Home, Phone, Mail, AlertCircle, Shield, Wrench, LogOut, Users } from "lucide-react";
+import { Search, Users, Home, Phone, Mail, AlertCircle, Shield, Wrench, LogOut, ChevronLeft, ChevronRight, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const EmergencyContacts = () => {
+  const { isExpanded, setIsExpanded } = useSidebar();
   const navigate = useNavigate();
+
   const currentUser = {
     name: "Sarah Johnson",
     unit: "A-101",
@@ -54,9 +56,9 @@ const EmergencyContacts = () => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Fixed Sidebar - Same as Index.jsx */}
+      {/* Fixed Sidebar - Same structure as Index.jsx */}
       <aside style={{
-        width: '280px',
+        width: isExpanded ? '280px' : '0px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -64,35 +66,47 @@ const EmergencyContacts = () => {
         background: 'white',
         borderRight: '1px solid #e5e7eb',
         overflowY: 'auto',
+        overflowX: 'hidden',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        transition: 'all 0.3s ease',
+        transform: isExpanded ? 'translateX(0)' : 'translateX(-100%)',
+        zIndex: 50
       }}>
-        {/* Logo area */}
-        <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Home style={{ width: '32px', height: '32px', color: '#2563eb' }} />
-            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
-              Fix My Flat
-            </span>
+        {/* Resident Name at Top */}
+        <div style={{ 
+          padding: '16px 24px', 
+          borderBottom: '1px solid #e5e7eb',
+          background: '#f8fafc'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            justifyContent: isExpanded ? 'flex-start' : 'center' 
+          }}>
+            <User style={{ width: 20, height: 20, color: '#2563eb' }} />
+            <p style={{ 
+              fontSize: '16px', 
+              fontWeight: '600', 
+              color: '#111827',
+            }}>
+              {isExpanded ? currentUser.name : currentUser.name.split(" ").map(n => n[0]).join("")}
+            </p>
           </div>
         </div>
 
-        {/* User info */}
+        {/* User Details */}
         <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb' }}>
-          <div className="flex items-center">
-            <Avatar>
-              <span className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-full text-white font-semibold text-lg">
-                {currentUser.name.split(" ").map(n => n[0]).join("").toUpperCase()}
-              </span>
-            </Avatar>
-            <div className="ml-3">
-              <p className="font-semibold text-gray-900">{currentUser.name}</p>
-              <p className="text-sm text-gray-500">Resident</p>
+          {isExpanded && (
+            <div style={{ fontSize: '14px', color: '#6b7280' }}>
+              <p>Unit: {currentUser.unit}</p>
+              <p>Building: {currentUser.building}</p>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Navigation */}
+        {/* Navigation - Updated to match Index.jsx structure */}
         <nav style={{ flex: 1, padding: '16px' }}>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <li>
@@ -100,17 +114,17 @@ const EmergencyContacts = () => {
                 variant="ghost"
                 style={{
                   width: "100%",
-                  justifyContent: "flex-start",
+                  justifyContent: isExpanded ? "flex-start" : "center",
                   borderRadius: 8,
-                  padding: "10px 24px",
+                  padding: "10px",
                   color: "#374151",
                   fontWeight: 500,
                   marginBottom: 4,
                 }}
                 onClick={() => navigate('/')}
               >
-                <AlertCircle style={{ marginRight: 12, width: 20, height: 20 }} />
-                Overview
+                <Home style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+                {isExpanded && "Home"}
               </Button>
             </li>
             <li>
@@ -118,52 +132,136 @@ const EmergencyContacts = () => {
                 variant="ghost"
                 style={{
                   width: "100%",
-                  justifyContent: "flex-start",
+                  justifyContent: isExpanded ? "flex-start" : "center",
                   borderRadius: 8,
-                  padding: "10px 24px",
+                  padding: "10px",
                   background: "#eef2ff",
                   color: "#2563eb",
                   fontWeight: 600,
                   marginBottom: 4,
                 }}
+                onClick={() => navigate('/emergency-contacts')}
               >
-                <Phone style={{ marginRight: 12, width: 20, height: 20 }} />
-                Emergency Contacts
+                <Phone style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+                {isExpanded && "Emergency Contacts"}
               </Button>
             </li>
-            {/* ...rest of navigation buttons... */}
+            <li>
+              <Button
+                variant="ghost"
+                style={{
+                  width: "100%",
+                  justifyContent: isExpanded ? "flex-start" : "center",
+                  borderRadius: 8,
+                  padding: "10px",
+                  color: "#374151",
+                  fontWeight: 500,
+                  marginBottom: 4,
+                }}
+                onClick={() => navigate('/maintenance')}
+              >
+                <Wrench style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+                {isExpanded && "Maintenance"}
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="ghost"
+                style={{
+                  width: "100%",
+                  justifyContent: isExpanded ? "flex-start" : "center",
+                  borderRadius: 8,
+                  padding: "10px",
+                  color: "#374151",
+                  fontWeight: 500,
+                  marginBottom: 4,
+                }}
+                onClick={() => navigate('/residents')}
+              >
+                <Users style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+                {isExpanded && "Apartment Residents"}
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="ghost"
+                style={{
+                  width: "100%",
+                  justifyContent: isExpanded ? "flex-start" : "center",
+                  borderRadius: 8,
+                  padding: "10px",
+                  color: "#374151",
+                  fontWeight: 500,
+                  marginBottom: 4,
+                }}
+                onClick={() => navigate('/admin-login')}
+              >
+                <Shield style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+                {isExpanded && "Admin Portal"}
+              </Button>
+            </li>
           </ul>
         </nav>
 
-        {/* Logout button */}
+        {/* Logout section */}
         <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb' }}>
-          <Button variant="outline" className="w-full justify-start" onClick={() => {}}>
-            <LogOut className="mr-2 h-5 w-5" />
-            Logout
+          <Button
+            variant="ghost"
+            style={{
+              width: "100%",
+              justifyContent: isExpanded ? "flex-start" : "center",
+              borderRadius: 8,
+              padding: "10px",
+              color: "#374151",
+              fontWeight: 500,
+            }}
+            onClick={() => {}}
+          >
+            <LogOut style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+            {isExpanded && "Logout"}
           </Button>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <main style={{
-        marginLeft: '280px',
+        marginLeft: isExpanded ? '280px' : '0px',
         flex: 1,
         background: '#f8fafc',
         minHeight: '100vh',
         padding: '32px',
-        maxWidth: 'calc(100vw - 280px)'
+        transition: 'margin-left 0.3s ease'
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Header */}
-          <div style={{ marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827', marginBottom: '8px' }}>
-              Emergency Contacts
-            </h1>
-            <p style={{ color: '#6b7280' }}>
-              Quick access to all important emergency contact information.
-            </p>
+        {/* Header with Logo and Title */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          marginBottom: '32px' 
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Button
+              variant="ghost"
+              onClick={() => setIsExpanded(!isExpanded)}
+              style={{ padding: '8px' }}
+            >
+              <Menu style={{ width: '24px', height: '24px', color: '#111827' }} />
+            </Button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Home style={{ width: '32px', height: '32px', color: '#2563eb' }} />
+              <div>
+                <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
+                  Fix My Flat
+                </h1>
+                <p style={{ fontSize: '14px', color: '#6b7280' }}>
+                  Emergency Contacts
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
 
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {/* Emergency Contacts Grid */}
           <div style={{ 
             display: 'grid', 
@@ -171,7 +269,12 @@ const EmergencyContacts = () => {
             gap: '24px' 
           }}>
             {emergencyContacts.map((contact, index) => (
-              <Card key={index} style={{ backgroundColor: "white", border: "none", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}>
+              <Card key={index} style={{ 
+                backgroundColor: "rgba(255, 255, 255, 0.8)", 
+                backdropFilter: "blur(4px)", 
+                border: "none", 
+                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" 
+              }}>
                 <CardContent style={{ padding: "24px" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

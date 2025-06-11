@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send, Menu, X, Shield, Wrench, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send, Menu, X, Shield, Wrench, LogOut, ChevronLeft, ChevronRight, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -262,14 +262,21 @@ const Index = () => {
           borderBottom: '1px solid #e5e7eb',
           background: '#f8fafc'
         }}>
-          <p style={{ 
-            fontSize: '16px', 
-            fontWeight: '600', 
-            color: '#111827',
-            textAlign: isExpanded ? 'left' : 'center'
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            justifyContent: isExpanded ? 'flex-start' : 'center' 
           }}>
-            {isExpanded ? currentUser.name : currentUser.name.split(" ").map(n => n[0]).join("")}
-          </p>
+            <User style={{ width: 20, height: 20, color: '#2563eb' }} />
+            <p style={{ 
+              fontSize: '16px', 
+              fontWeight: '600', 
+              color: '#111827',
+            }}>
+              {isExpanded ? currentUser.name : currentUser.name.split(" ").map(n => n[0]).join("")}
+            </p>
+          </div>
         </div>
 
         {/* User Details */}
@@ -293,32 +300,15 @@ const Index = () => {
                   justifyContent: isExpanded ? "flex-start" : "center",
                   borderRadius: 8,
                   padding: "10px",
-                  color: "#374151",
-                  fontWeight: 500,
+                  background: "#eef2ff",
+                  color: "#2563eb",
+                  fontWeight: 600,
                   marginBottom: 4,
                 }}
                 onClick={() => navigate('/')}
               >
                 <Home style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
                 {isExpanded && "Home"}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="ghost"
-                style={{
-                  width: "100%",
-                  justifyContent: isExpanded ? "flex-start" : "center",
-                  borderRadius: 8,
-                  padding: "10px",
-                  color: "#374151",
-                  fontWeight: 500,
-                  marginBottom: 4,
-                }}
-                onClick={() => navigate('/overview')}
-              >
-                <AlertCircle style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
-                {isExpanded && "Overview"}
               </Button>
             </li>
             <li>
@@ -398,9 +388,20 @@ const Index = () => {
 
         {/* Logout section */}
         <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb' }}>
-          <Button variant="outline" className="w-full justify-start" onClick={() => {}}>
-            <LogOut className="mr-2 h-5 w-5" />
-            Logout
+          <Button
+            variant="ghost"
+            style={{
+              width: "100%",
+              justifyContent: isExpanded ? "flex-start" : "center",
+              borderRadius: 8,
+              padding: "10px",
+              color: "#374151",
+              fontWeight: 500,
+            }}
+            onClick={() => {}}
+          >
+            <LogOut style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+            {isExpanded && "Logout"}
           </Button>
         </div>
       </aside>
