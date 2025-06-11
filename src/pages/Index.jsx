@@ -254,12 +254,32 @@ const Index = () => {
         <div style={{ padding: "24px" }}>
           {/* Sidebar Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#111827" }}>Emergency Contacts</h2>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#111827" }}>Quick Access</h2>
             <Button
               onClick={() => setSidebarOpen(false)}
               style={{ padding: "8px", backgroundColor: "transparent", border: "none" }}
             >
               <X style={{ height: "20px", width: "20px", color: "#6b7280" }} />
+            </Button>
+          </div>
+
+          {/* Emergency Contacts Link */}
+          <div style={{ marginBottom: "24px" }}>
+            <Button
+              onClick={() => navigate('/emergency-contacts')}
+              style={{
+                width: "100%",
+                backgroundColor: "#2563eb",
+                color: "white",
+                padding: "12px",
+                borderRadius: "8px",
+                border: "none",
+                fontSize: "0.875rem",
+                fontWeight: "500"
+              }}
+            >
+              <Phone style={{ height: "16px", width: "16px", marginRight: "8px" }} />
+              Emergency Contacts
             </Button>
           </div>
 
@@ -283,9 +303,12 @@ const Index = () => {
             </Button>
           </div>
 
-          {/* Emergency Contacts */}
+          {/* Emergency Contacts Preview */}
+          <div style={{ marginBottom: "16px" }}>
+            <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#111827", marginBottom: "12px" }}>Quick Contacts</h3>
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {emergencyContacts.map((contact, index) => (
+            {emergencyContacts.slice(0, 3).map((contact, index) => (
               <div key={index} style={{
                 backgroundColor: "white",
                 borderRadius: "8px",
