@@ -302,54 +302,6 @@ const Index = () => {
               Admin Portal
             </Button>
           </div>
-
-          {/* Emergency Contacts Preview */}
-          <div style={{ marginBottom: "16px" }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: "600", color: "#111827", marginBottom: "12px" }}>Quick Contacts</h3>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {emergencyContacts.slice(0, 3).map((contact, index) => (
-              <div key={index} style={{
-                backgroundColor: "white",
-                borderRadius: "8px",
-                padding: "16px",
-                boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-                border: "1px solid #e5e7eb"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                  <Phone style={{ height: "16px", width: "16px", color: "#2563eb" }} />
-                  <h3 style={{ fontSize: "0.875rem", fontWeight: "600", color: "#111827" }}>{contact.name}</h3>
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "8px" }}>
-                  {contact.department} • {contact.available}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <a href={`tel:${contact.phone}`} style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    color: "#2563eb",
-                    textDecoration: "none",
-                    fontSize: "0.75rem"
-                  }}>
-                    <Phone style={{ height: "12px", width: "12px" }} />
-                    {contact.phone}
-                  </a>
-                  <a href={`mailto:${contact.email}`} style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    color: "#2563eb",
-                    textDecoration: "none",
-                    fontSize: "0.75rem"
-                  }}>
-                    <Mail style={{ height: "12px", width: "12px" }} />
-                    {contact.email}
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
