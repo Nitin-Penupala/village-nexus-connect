@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -182,46 +183,46 @@ const Index = () => {
   const completedCount = complaints.filter(c => c.status === "completed").length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div style={{ minHeight: "100vh", background: "linear-gradient(to bottom right, #dbeafe, #e0e7ff)" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 16px" }}>
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center items-center gap-3 mb-4">
-            <div className="p-3 bg-blue-600 rounded-full">
-              <AlertCircle className="h-8 w-8 text-white" />
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+            <div style={{ padding: "12px", backgroundColor: "#2563eb", borderRadius: "50%" }}>
+              <AlertCircle style={{ height: "32px", width: "32px", color: "white" }} />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900">Complaint Management</h1>
+            <h1 style={{ fontSize: "2.25rem", fontWeight: "bold", color: "#111827" }}>Complaint Management</h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p style={{ fontSize: "1.125rem", color: "#6b7280", maxWidth: "32rem", margin: "0 auto" }}>
             Track and manage all building complaints efficiently. Submit new complaints and monitor their progress.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-orange-100 rounded-full">
-                  <AlertCircle className="h-6 w-6 text-orange-600" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px", marginBottom: "32px" }}>
+          <Card style={{ backgroundColor: "rgba(255, 255, 255, 0.8)", backdropFilter: "blur(4px)", border: "none", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}>
+            <CardContent style={{ padding: "24px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div style={{ padding: "12px", backgroundColor: "#fed7aa", borderRadius: "50%" }}>
+                  <AlertCircle style={{ height: "24px", width: "24px", color: "#ea580c" }} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">In Progress Complaints</p>
-                  <p className="text-2xl font-bold text-gray-900">{inProgressCount}</p>
+                  <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>In Progress Complaints</p>
+                  <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#111827" }}>{inProgressCount}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-100 rounded-full">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+          <Card style={{ backgroundColor: "rgba(255, 255, 255, 0.8)", backdropFilter: "blur(4px)", border: "none", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}>
+            <CardContent style={{ padding: "24px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div style={{ padding: "12px", backgroundColor: "#bbf7d0", borderRadius: "50%" }}>
+                  <CheckCircle style={{ height: "24px", width: "24px", color: "#16a34a" }} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Completed Complaints</p>
-                  <p className="text-2xl font-bold text-gray-900">{completedCount}</p>
+                  <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>Completed Complaints</p>
+                  <p style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#111827" }}>{completedCount}</p>
                 </div>
               </div>
             </CardContent>
@@ -229,36 +230,36 @@ const Index = () => {
         </div>
 
         {/* Quick Complaint Submission Bar */}
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
-          <CardContent className="p-6">
-            <form onSubmit={handleQuickComplaintSubmit} className="space-y-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+        <Card style={{ backgroundColor: "rgba(255, 255, 255, 0.8)", backdropFilter: "blur(4px)", border: "none", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)", marginBottom: "32px" }}>
+          <CardContent style={{ padding: "24px" }}>
+            <form onSubmit={handleQuickComplaintSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ flex: "1" }}>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Your Name</label>
                   <Input
                     value={currentUser.name}
                     disabled
-                    className="bg-gray-50"
+                    style={{ backgroundColor: "#f9fafb" }}
                   />
                 </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Apartment ID</label>
+                <div style={{ flex: "1" }}>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Apartment ID</label>
                   <Input
                     value={`${currentUser.unit}, ${currentUser.building}`}
                     disabled
-                    className="bg-gray-50"
+                    style={{ backgroundColor: "#f9fafb" }}
                   />
                 </div>
               </div>
               
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Complaint Type</label>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ flex: "1" }}>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Complaint Type</label>
                   <Select value={quickComplaintType} onValueChange={setQuickComplaintType}>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger style={{ backgroundColor: "white" }}>
                       <SelectValue placeholder="Select complaint type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent style={{ backgroundColor: "white", zIndex: "60" }}>
                       <SelectItem value="Plumbing">Plumbing</SelectItem>
                       <SelectItem value="Electrical">Electrical</SelectItem>
                       <SelectItem value="HVAC">HVAC</SelectItem>
@@ -270,22 +271,22 @@ const Index = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex-2 md:flex-[2]">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Complaint Description</label>
+                <div style={{ flex: "2" }}>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Complaint Description</label>
                   <Textarea
                     value={quickComplaintDescription}
                     onChange={(e) => setQuickComplaintDescription(e.target.value)}
                     placeholder="Describe your complaint in detail..."
-                    className="bg-white min-h-[60px]"
+                    style={{ backgroundColor: "white", minHeight: "60px" }}
                   />
                 </div>
-                <div className="flex items-end">
+                <div style={{ display: "flex", alignItems: "end" }}>
                   <Button 
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    style={{ backgroundColor: "#2563eb", color: "white" }}
                     disabled={!quickComplaintType || !quickComplaintDescription.trim()}
                   >
-                    <Send className="h-4 w-4 mr-2" />
+                    <Send style={{ height: "16px", width: "16px", marginRight: "8px" }} />
                     Submit
                   </Button>
                 </div>
@@ -295,50 +296,50 @@ const Index = () => {
         </Card>
 
         {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
+        <div style={{ marginBottom: "24px" }}>
+          <p style={{ color: "#6b7280" }}>
             Showing {filteredComplaints.length} of {complaints.length} complaints
           </p>
         </div>
 
-        {/* New Filter Bar Card relocated here */}
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        {/* Filter Bar Card */}
+        <Card style={{ backgroundColor: "rgba(255, 255, 255, 0.8)", backdropFilter: "blur(4px)", border: "none", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)", marginBottom: "32px" }}>
+          <CardContent style={{ padding: "24px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px", alignItems: "center", justifyContent: "space-between" }}>
               <Input 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search complaints..."
-                className="w-full md:w-1/2"
+                style={{ width: "100%", maxWidth: "400px" }}
               />
-              <div className="flex flex-row gap-4 items-center">
+              <div style={{ display: "flex", flexDirection: "row", gap: "16px", alignItems: "center" }}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="bg-white">
-                      <Filter className="h-4 w-4 mr-2" />
+                    <Button variant="outline" style={{ backgroundColor: "white" }}>
+                      <Filter style={{ height: "16px", width: "16px", marginRight: "8px" }} />
                       Filter
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-white z-50">
-                    <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+                  <DropdownMenuContent align="end" style={{ backgroundColor: "white", zIndex: "60", border: "1px solid #d1d5db", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("all")} style={{ backgroundColor: "white" }}>
                       All Complaints
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("completed")} style={{ backgroundColor: "white" }}>
                       Completed Complaints
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedFilter("in-progress")}>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("in-progress")} style={{ backgroundColor: "white" }}>
                       In Progress Complaints
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedFilter("your-complaints")}>
+                    <DropdownMenuItem onClick={() => setSelectedFilter("your-complaints")} style={{ backgroundColor: "white" }}>
                       Your Complaints
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button 
                   onClick={() => setIsAddDialogOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  style={{ backgroundColor: "#2563eb", color: "white" }}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus style={{ height: "16px", width: "16px", marginRight: "8px" }} />
                   Detailed Complaint
                 </Button>
               </div>
@@ -347,7 +348,7 @@ const Index = () => {
         </Card>
 
         {/* Complaints Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "24px" }}>
           {filteredComplaints.map((complaint) => (
             <ComplaintCard
               key={complaint.id}
@@ -359,11 +360,11 @@ const Index = () => {
         </div>
 
         {filteredComplaints.length === 0 && (
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-12 text-center">
-              <AlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No complaints found</h3>
-              <p className="text-gray-600 mb-4">
+          <Card style={{ backgroundColor: "rgba(255, 255, 255, 0.8)", backdropFilter: "blur(4px)", border: "none", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}>
+            <CardContent style={{ padding: "48px", textAlign: "center" }}>
+              <AlertCircle style={{ height: "64px", width: "64px", color: "#9ca3af", margin: "0 auto 16px auto" }} />
+              <h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#111827", marginBottom: "8px" }}>No complaints found</h3>
+              <p style={{ color: "#6b7280", marginBottom: "16px" }}>
                 Try adjusting your filters or submit a new complaint using the form above.
               </p>
             </CardContent>
