@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -103,7 +102,7 @@ const Index = () => {
   
   // Quick complaint form state
   const [quickComplaintType, setQuickComplaintType] = useState("");
-  const [quickComplaintPriority, setQuickComplaintPriority] = useState("");
+  const [customComplaintType, setCustomComplaintType] = useState("");
   const [quickComplaintDescription, setQuickComplaintDescription] = useState("");
   
   // Current user info (auto-filled)
@@ -114,8 +113,20 @@ const Index = () => {
     email: "sarah.johnson@email.com"
   };
 
-  const buildings = ["all", ...Array.from(new Set(complaints.map(c => c.building)))];
-  
+  // Priority mapping based on complaint type
+  const getPriorityByType = (type) => {
+    const priorityMap = {
+      "Plumbing": "high",
+      "Electrical": "high", 
+      "HVAC": "medium",
+      "Mechanical": "high",
+      "Noise": "low",
+      "Parking": "low",
+      "Security": "high"
+    };
+    return priorityMap[type] || "medium";
+  };
+
   // Mock current user for "your complaints" filter
   const currentUserEmail = "sarah.johnson@email.com";
 
@@ -151,13 +162,14 @@ const Index = () => {
 
   const handleQuickComplaintSubmit = (e) => {
     e.preventDefault();
-    if (!quickComplaintType || !quickComplaintPriority || !quickComplaintDescription.trim()) return;
+    const complaintType = quickComplaintType === "Other" ? customComplaintType : quickComplaintType;
+    if (!complaintType || !quickComplaintDescription.trim()) return;
     
     const newComplaint = {
-      title: `${quickComplaintType} Issue`,
+      title: `${complaintType} Issue`,
       description: quickComplaintDescription,
-      priority: quickComplaintPriority,
-      category: quickComplaintType,
+      priority: getPriorityByType(complaintType),
+      category: complaintType,
       residentName: currentUser.name,
       unit: currentUser.unit,
       building: currentUser.building,
@@ -167,7 +179,7 @@ const Index = () => {
     
     addComplaint(newComplaint);
     setQuickComplaintType("");
-    setQuickComplaintPriority("");
+    setCustomComplaintType("");
     setQuickComplaintDescription("");
   };
 
@@ -259,7 +271,7 @@ const Index = () => {
                     <SelectTrigger style={{ backgroundColor: "white" }}>
                       <SelectValue placeholder="Select complaint type" />
                     </SelectTrigger>
-                    <SelectContent style={{ backgroundColor: "white", zIndex: "60" }}>
+                    <SelectContent style={{ backgroundColor: "white", zIndex: "60", opacity: "1" }}>
                       <SelectItem value="Plumbing">Plumbing</SelectItem>
                       <SelectItem value="Electrical">Electrical</SelectItem>
                       <SelectItem value="HVAC">HVAC</SelectItem>
@@ -271,19 +283,17 @@ const Index = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div style={{ flex: "1" }}>
-                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Priority</label>
-                  <Select value={quickComplaintPriority} onValueChange={setQuickComplaintPriority}>
-                    <SelectTrigger style={{ backgroundColor: "white" }}>
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                    <SelectContent style={{ backgroundColor: "white", zIndex: "60" }}>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {quickComplaintType === "Other" && (
+                  <div style={{ flex: "1" }}>
+                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Custom Complaint Type</label>
+                    <Input
+                      value={customComplaintType}
+                      onChange={(e) => setCustomComplaintType(e.target.value)}
+                      placeholder="Enter complaint type"
+                      style={{ backgroundColor: "white" }}
+                    />
+                  </div>
+                )}
                 <div style={{ flex: "2" }}>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Complaint Description</label>
                   <Textarea
@@ -297,7 +307,7 @@ const Index = () => {
                   <Button 
                     type="submit"
                     style={{ backgroundColor: "#2563eb", color: "white" }}
-                    disabled={!quickComplaintType || !quickComplaintPriority || !quickComplaintDescription.trim()}
+                    disabled={!quickComplaintType || (quickComplaintType === "Other" && !customComplaintType.trim()) || !quickComplaintDescription.trim()}
                   >
                     <Send style={{ height: "16px", width: "16px", marginRight: "8px" }} />
                     Submit
