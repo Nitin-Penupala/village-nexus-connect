@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send } from "lucide-react";
+import { Search, Plus, Users, Home, Phone, Mail, AlertCircle, CheckCircle, Filter, Send, Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ComplaintCard from "@/components/ComplaintCard";
+import { useNavigate } from "react-router-dom";
 
 const initialComplaints = [
   {
@@ -97,8 +98,9 @@ const initialComplaints = [
 const Index = () => {
   const [complaints, setComplaints] = useState(initialComplaints);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedBuilding, setSelectedBuilding] = useState("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
   
   // Quick complaint form state
   const [quickComplaintType, setQuickComplaintType] = useState("");
@@ -112,6 +114,45 @@ const Index = () => {
     building: "Maple Building",
     email: "sarah.johnson@email.com"
   };
+
+  // Emergency contacts data
+  const emergencyContacts = [
+    {
+      name: "Building Security",
+      phone: "+1 (555) 123-4567",
+      email: "security@building.com",
+      department: "Security",
+      available: "24/7"
+    },
+    {
+      name: "Maintenance Emergency",
+      phone: "+1 (555) 234-5678", 
+      email: "maintenance@building.com",
+      department: "Maintenance",
+      available: "24/7"
+    },
+    {
+      name: "Fire Department",
+      phone: "911",
+      email: "emergency@fire.gov",
+      department: "Emergency",
+      available: "24/7"
+    },
+    {
+      name: "Building Manager",
+      phone: "+1 (555) 345-6789",
+      email: "manager@building.com", 
+      department: "Management",
+      available: "9 AM - 6 PM"
+    },
+    {
+      name: "Medical Emergency",
+      phone: "911",
+      email: "emergency@medical.gov",
+      department: "Emergency", 
+      available: "24/7"
+    }
+  ];
 
   // Priority mapping based on complaint type
   const getPriorityByType = (type) => {
@@ -195,15 +236,134 @@ const Index = () => {
   const completedCount = complaints.filter(c => c.status === "completed").length;
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(to bottom right, #dbeafe, #e0e7ff)" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 16px" }}>
-        {/* Header */}
+    <div style={{ minHeight: "100vh", background: "linear-gradient(to bottom right, #dbeafe, #e0e7ff)", display: "flex" }}>
+      {/* Sidebar */}
+      <div style={{
+        position: "fixed",
+        top: "0",
+        left: sidebarOpen ? "0" : "-320px",
+        width: "320px",
+        height: "100vh",
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(8px)",
+        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        transition: "left 0.3s ease-in-out",
+        zIndex: "50",
+        overflow: "auto"
+      }}>
+        <div style={{ padding: "24px" }}>
+          {/* Sidebar Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#111827" }}>Emergency Contacts</h2>
+            <Button
+              onClick={() => setSidebarOpen(false)}
+              style={{ padding: "8px", backgroundColor: "transparent", border: "none" }}
+            >
+              <X style={{ height: "20px", width: "20px", color: "#6b7280" }} />
+            </Button>
+          </div>
+
+          {/* Admin Portal Button */}
+          <div style={{ marginBottom: "24px" }}>
+            <Button
+              onClick={() => navigate('/admin-login')}
+              style={{
+                width: "100%",
+                backgroundColor: "#dc2626",
+                color: "white",
+                padding: "12px",
+                borderRadius: "8px",
+                border: "none",
+                fontSize: "0.875rem",
+                fontWeight: "500"
+              }}
+            >
+              <Shield style={{ height: "16px", width: "16px", marginRight: "8px" }} />
+              Admin Portal
+            </Button>
+          </div>
+
+          {/* Emergency Contacts */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {emergencyContacts.map((contact, index) => (
+              <div key={index} style={{
+                backgroundColor: "white",
+                borderRadius: "8px",
+                padding: "16px",
+                boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+                border: "1px solid #e5e7eb"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                  <Phone style={{ height: "16px", width: "16px", color: "#2563eb" }} />
+                  <h3 style={{ fontSize: "0.875rem", fontWeight: "600", color: "#111827" }}>{contact.name}</h3>
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#6b7280", marginBottom: "8px" }}>
+                  {contact.department} • {contact.available}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <a href={`tel:${contact.phone}`} style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#2563eb",
+                    textDecoration: "none",
+                    fontSize: "0.75rem"
+                  }}>
+                    <Phone style={{ height: "12px", width: "12px" }} />
+                    {contact.phone}
+                  </a>
+                  <a href={`mailto:${contact.email}`} style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#2563eb",
+                    textDecoration: "none",
+                    fontSize: "0.75rem"
+                  }}>
+                    <Mail style={{ height: "12px", width: "12px" }} />
+                    {contact.email}
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: "fixed",
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: "40"
+          }}
+        />
+      )}
+
+      {/* Main Content */}
+      <div style={{ flex: "1", maxWidth: "1200px", margin: "0 auto", padding: "32px 16px" }}>
+        {/* Header with Menu Button */}
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-            <div style={{ padding: "12px", backgroundColor: "#2563eb", borderRadius: "50%" }}>
-              <AlertCircle style={{ height: "32px", width: "32px", color: "white" }} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <Button
+              onClick={() => setSidebarOpen(true)}
+              style={{ padding: "8px", backgroundColor: "transparent", border: "none" }}
+            >
+              <Menu style={{ height: "24px", width: "24px", color: "#111827" }} />
+            </Button>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "12px", flex: "1" }}>
+              <div style={{ padding: "12px", backgroundColor: "#2563eb", borderRadius: "50%" }}>
+                <AlertCircle style={{ height: "32px", width: "32px", color: "white" }} />
+              </div>
+              <h1 style={{ fontSize: "2.25rem", fontWeight: "bold", color: "#111827" }}>Complaint Management</h1>
             </div>
-            <h1 style={{ fontSize: "2.25rem", fontWeight: "bold", color: "#111827" }}>Complaint Management</h1>
+            <div style={{ width: "40px" }}></div>
           </div>
           <p style={{ fontSize: "1.125rem", color: "#6b7280", maxWidth: "32rem", margin: "0 auto" }}>
             Track and manage all building complaints efficiently. Submit new complaints and monitor their progress.
