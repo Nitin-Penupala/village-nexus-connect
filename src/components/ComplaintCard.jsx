@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AlertTriangle, CheckCircle, Clock, User, Home, Calendar, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -74,26 +73,21 @@ const ComplaintCard = ({ complaint, onUpdate, onDelete }) => {
                 {complaint.status === "in-progress" ? "In Progress" : "Completed"}
               </Badge>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white z-50">
-                <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onDelete(complaint.id)}
-                  className="text-red-600"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {complaint.status !== "completed" && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white z-50">
+                  <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           <div className="mb-4">
