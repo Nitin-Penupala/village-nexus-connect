@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import AddComplaintDialog from "@/components/AddComplaintDialog";
 import ComplaintCard from "@/components/ComplaintCard";
 
 const initialComplaints = [
@@ -101,10 +100,10 @@ const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBuilding, setSelectedBuilding] = useState("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   // Quick complaint form state
   const [quickComplaintType, setQuickComplaintType] = useState("");
+  const [quickComplaintPriority, setQuickComplaintPriority] = useState("");
   const [quickComplaintDescription, setQuickComplaintDescription] = useState("");
   
   // Current user info (auto-filled)
@@ -152,12 +151,12 @@ const Index = () => {
 
   const handleQuickComplaintSubmit = (e) => {
     e.preventDefault();
-    if (!quickComplaintType || !quickComplaintDescription.trim()) return;
+    if (!quickComplaintType || !quickComplaintPriority || !quickComplaintDescription.trim()) return;
     
     const newComplaint = {
       title: `${quickComplaintType} Issue`,
       description: quickComplaintDescription,
-      priority: "medium",
+      priority: quickComplaintPriority,
       category: quickComplaintType,
       residentName: currentUser.name,
       unit: currentUser.unit,
@@ -168,6 +167,7 @@ const Index = () => {
     
     addComplaint(newComplaint);
     setQuickComplaintType("");
+    setQuickComplaintPriority("");
     setQuickComplaintDescription("");
   };
 
@@ -271,6 +271,19 @@ const Index = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                <div style={{ flex: "1" }}>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Priority</label>
+                  <Select value={quickComplaintPriority} onValueChange={setQuickComplaintPriority}>
+                    <SelectTrigger style={{ backgroundColor: "white" }}>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent style={{ backgroundColor: "white", zIndex: "60" }}>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div style={{ flex: "2" }}>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "#374151", marginBottom: "4px" }}>Complaint Description</label>
                   <Textarea
@@ -284,7 +297,7 @@ const Index = () => {
                   <Button 
                     type="submit"
                     style={{ backgroundColor: "#2563eb", color: "white" }}
-                    disabled={!quickComplaintType || !quickComplaintDescription.trim()}
+                    disabled={!quickComplaintType || !quickComplaintPriority || !quickComplaintDescription.trim()}
                   >
                     <Send style={{ height: "16px", width: "16px", marginRight: "8px" }} />
                     Submit
@@ -335,13 +348,6 @@ const Index = () => {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button 
-                  onClick={() => setIsAddDialogOpen(true)}
-                  style={{ backgroundColor: "#2563eb", color: "white" }}
-                >
-                  <Plus style={{ height: "16px", width: "16px", marginRight: "8px" }} />
-                  Detailed Complaint
-                </Button>
               </div>
             </div>
           </CardContent>
@@ -370,12 +376,6 @@ const Index = () => {
             </CardContent>
           </Card>
         )}
-
-        <AddComplaintDialog
-          open={isAddDialogOpen}
-          onOpenChange={setIsAddDialogOpen}
-          onAdd={addComplaint}
-        />
       </div>
     </div>
   );
