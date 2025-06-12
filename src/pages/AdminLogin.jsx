@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,14 @@ import { useNavigate } from "react-router-dom";
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Simple validation - in real app, this would be proper authentication
+    if (credentials.email && credentials.password) {
+      navigate('/admin-dashboard');
+    }
+  };
 
   return (
     <div style={{ 
@@ -33,10 +42,7 @@ const AdminLogin = () => {
               </p>
             </div>
 
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              // Handle login logic here
-            }}>
+            <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: "16px" }}>
                 <label style={{ 
                   display: "block", 
