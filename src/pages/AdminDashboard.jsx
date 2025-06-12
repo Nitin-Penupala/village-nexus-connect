@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Shield, Users, AlertTriangle, Settings, LogOut, FileText, Bell, Menu, ChevronLeft, Home, Phone } from "lucide-react";
+import { Shield, Users, AlertTriangle, Settings, LogOut, FileText, Bell, Menu, Home, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -58,19 +58,18 @@ const AdminDashboard = () => {
   };
 
   const sidebarItems = [
-    { icon: FileText, label: "Dashboard", active: true },
-    { icon: Users, label: "Residents" },
-    { icon: AlertTriangle, label: "Complaints" },
-    { icon: Bell, label: "Notifications" },
+    { icon: Home, label: "Home", active: true },
     { icon: Phone, label: "Emergency Contacts", onClick: () => navigate('/emergency-contacts') },
-    { icon: Settings, label: "Settings" },
+    { icon: Settings, label: "Maintenance" },
+    { icon: Users, label: "Apartment Residents" },
+    { icon: Shield, label: "Admin Portal" },
   ];
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
         </div>
       </div>
@@ -80,50 +79,38 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <div className={`bg-white shadow-lg transition-all duration-300 ${isSidebarExpanded ? 'w-64' : 'w-16'} flex flex-col`}>
-        {/* Header */}
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className={`flex items-center space-x-3 ${!isSidebarExpanded && 'justify-center'}`}>
-              <Shield className="h-8 w-8 text-red-600 flex-shrink-0" />
-              {isSidebarExpanded && (
-                <div>
-                  <h1 className="text-lg font-bold text-gray-800">FixMyFlat</h1>
-                  <p className="text-sm text-gray-600">Admin Portal</p>
-                </div>
-              )}
+      <div className={`bg-white shadow-lg transition-all duration-300 ${isSidebarExpanded ? 'w-64' : 'w-16'} flex flex-col relative z-10`}>
+        {/* User Profile Section */}
+        <div className="p-4 border-b bg-blue-50">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <Shield className="h-4 w-4 text-white" />
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleSidebar}
-              className="p-2"
-            >
-              {isSidebarExpanded ? (
-                <ChevronLeft className="h-4 w-4" />
-              ) : (
-                <Menu className="h-4 w-4" />
-              )}
-            </Button>
+            {isSidebarExpanded && (
+              <div>
+                <h3 className="font-semibold text-gray-800">Admin User</h3>
+                <p className="text-sm text-gray-600">Building: Admin Portal</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 mt-6">
-          <div className="px-4 space-y-2">
+        <nav className="flex-1 py-4">
+          <div className="px-2 space-y-1">
             {sidebarItems.map((item, index) => (
               <button
                 key={index}
                 onClick={item.onClick}
-                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors text-left ${
                   item.active 
-                    ? 'bg-red-50 text-red-700 font-medium' 
+                    ? 'bg-blue-50 text-blue-700 font-medium border-r-2 border-blue-700' 
                     : 'text-gray-700 hover:bg-gray-100'
-                } ${!isSidebarExpanded && 'justify-center'}`}
+                } ${!isSidebarExpanded && 'justify-center px-2'}`}
                 title={!isSidebarExpanded ? item.label : ''}
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />
-                {isSidebarExpanded && <span>{item.label}</span>}
+                {isSidebarExpanded && <span className="text-sm">{item.label}</span>}
               </button>
             ))}
           </div>
@@ -133,44 +120,58 @@ const AdminDashboard = () => {
         <div className="p-4 border-t">
           <button 
             onClick={handleLogout}
-            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors ${!isSidebarExpanded && 'justify-center'}`}
+            className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors ${!isSidebarExpanded && 'justify-center px-2'}`}
             title={!isSidebarExpanded ? 'Logout' : ''}
           >
             <LogOut className="h-5 w-5 flex-shrink-0" />
-            {isSidebarExpanded && <span>Logout</span>}
+            {isSidebarExpanded && <span className="text-sm">Logout</span>}
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b p-6">
+      <div className="flex-1 flex flex-col">
+        {/* Top Header */}
+        <div className="bg-white shadow-sm border-b px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-              <p className="text-gray-600 mt-1">Monitor and manage your building operations</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-600">Welcome, Admin</span>
-              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                <Shield className="h-5 w-5 text-white" />
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleSidebar}
+                className="p-2"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div className="flex items-center space-x-3">
+                <Home className="h-6 w-6 text-blue-600" />
+                <div>
+                  <h1 className="text-xl font-bold text-gray-800">Fix My Flat</h1>
+                  <p className="text-sm text-gray-600">Admin Management System</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Dashboard Content */}
-        <div className="p-6">
+        <div className="flex-1 p-8">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Management</h1>
+            <p className="text-gray-600">Hey! Admin User</p>
+            <p className="text-sm text-gray-500 mt-1">Monitor and manage all building operations efficiently.</p>
+          </div>
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {dashboardStats.map((stat, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow border-l-4 border-l-red-500">
+              <Card key={index} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                      <p className="text-3xl font-bold text-gray-800 mt-2">{stat.value}</p>
+                      <p className="text-sm font-medium text-gray-600 mb-2">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
                     </div>
                     <div className={`p-3 rounded-full ${stat.bgColor}`}>
                       <stat.icon className={`h-6 w-6 ${stat.color}`} />
@@ -181,29 +182,29 @@ const AdminDashboard = () => {
             ))}
           </div>
 
-          {/* Recent Complaints Table */}
-          <Card className="shadow-lg">
-            <CardHeader className="bg-gray-50 border-b">
-              <CardTitle className="flex items-center space-x-2 text-gray-800">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+          {/* Recent Complaints Section */}
+          <Card className="shadow-md">
+            <CardHeader className="bg-gray-50 border-b px-6 py-4">
+              <CardTitle className="flex items-center space-x-2 text-gray-800 text-lg">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
                 <span>Recent Complaints</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm">ID</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Title</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Unit</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Priority</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Status</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+                      <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">ID</th>
+                      <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Title</th>
+                      <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Unit</th>
+                      <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Priority</th>
+                      <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Status</th>
+                      <th className="text-left py-3 px-6 font-medium text-gray-700 text-sm">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {complaints.slice(0, 5).map((complaint) => (
+                    {complaints.slice(0, 8).map((complaint) => (
                       <tr key={complaint.id} className="border-b hover:bg-gray-50 transition-colors">
                         <td className="py-4 px-6 text-sm font-medium text-gray-900">
                           #{complaint.id.toString().padStart(3, '0')}
@@ -211,7 +212,7 @@ const AdminDashboard = () => {
                         <td className="py-4 px-6 text-sm text-gray-900">{complaint.title}</td>
                         <td className="py-4 px-6 text-sm text-gray-600">{complaint.unit}</td>
                         <td className="py-4 px-6">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             complaint.priority === 'high' ? 'bg-red-100 text-red-800' :
                             complaint.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                             'bg-green-100 text-green-800'
@@ -220,7 +221,7 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="py-4 px-6">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             complaint.status === 'resolved' ? 'bg-green-100 text-green-800' :
                             complaint.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
                             'bg-gray-100 text-gray-800'
@@ -229,7 +230,7 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="py-4 px-6">
-                          <Button size="sm" variant="outline" className="text-xs hover:bg-red-50 hover:text-red-700 hover:border-red-300">
+                          <Button size="sm" variant="outline" className="text-xs hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300">
                             View Details
                           </Button>
                         </td>
