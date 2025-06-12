@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Shield, Users, AlertTriangle, Settings, LogOut, FileText, Bell, Menu, Home, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,16 +23,30 @@ interface Complaint {
 }
 
 const AdminDashboard = () => {
+  console.log("AdminDashboard component rendering...");
+  
   const navigate = useNavigate();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-  // Fetch complaints data with proper typing
+  // Fetch complaints data with proper error handling
   const { data: complaints = [], isLoading, error } = useQuery<Complaint[]>({
     queryKey: ['complaints'],
-    queryFn: complaintService.getAllComplaints,
+    queryFn: async () => {
+      console.log("Fetching complaints...");
+      try {
+        const result = await complaintService.getAllComplaints();
+        console.log("Complaints fetched successfully:", result);
+        return result || [];
+      } catch (err) {
+        console.error("Error fetching complaints:", err);
+        return [];
+      }
+    },
   });
 
-  // Calculate dashboard stats from real data
+  console.log("Component state:", { complaints, isLoading, error, complaintsLength: complaints?.length });
+
+  // Calculate dashboard stats from real data with safety checks
   const dashboardStats = [
     { 
       title: "Total Residents", 
@@ -42,21 +57,21 @@ const AdminDashboard = () => {
     },
     { 
       title: "Active Complaints", 
-      value: complaints.filter(c => c.status === "in-progress").length.toString(), 
+      value: Array.isArray(complaints) ? complaints.filter(c => c.status === "in-progress").length.toString() : "0", 
       icon: AlertTriangle, 
       color: "text-orange-600",
       bgColor: "bg-orange-50"
     },
     { 
       title: "Resolved Issues", 
-      value: complaints.filter(c => c.status === "resolved").length.toString(), 
+      value: Array.isArray(complaints) ? complaints.filter(c => c.status === "resolved").length.toString() : "0", 
       icon: FileText, 
       color: "text-green-600",
       bgColor: "bg-green-50"
     },
     { 
       title: "Pending Actions", 
-      value: complaints.filter(c => c.status === "pending").length.toString(), 
+      value: Array.isArray(complaints) ? complaints.filter(c => c.status === "pending").length.toString() : "0", 
       icon: Bell, 
       color: "text-red-600",
       bgColor: "bg-red-50"
@@ -64,10 +79,12 @@ const AdminDashboard = () => {
   ];
 
   const handleLogout = () => {
+    console.log("Logout clicked");
     navigate('/admin-login');
   };
 
   const toggleSidebar = () => {
+    console.log("Toggle sidebar clicked");
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
@@ -79,7 +96,24 @@ const AdminDashboard = () => {
     { icon: Shield, label: "Admin Portal" },
   ];
 
+  if (error) {
+    console.error("Query error:", error);
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+          <p className="text-red-600">Error loading dashboard</p>
+          <p className="text-gray-600 text-sm mt-2">{error.message || "Unknown error"}</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Reload Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
+    console.log("Dashboard is loading...");
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -89,6 +123,8 @@ const AdminDashboard = () => {
       </div>
     );
   }
+
+  console.log("Rendering main dashboard content");
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -218,7 +254,7 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {complaints.slice(0, 8).map((complaint) => (
+                    {Array.isArray(complaints) && complaints.slice(0, 8).map((complaint) => (
                       <tr key={complaint.id} className="border-b hover:bg-gray-50 transition-colors">
                         <td className="py-4 px-6 text-sm font-medium text-gray-900">
                           #{complaint.id.toString().padStart(3, '0')}
@@ -253,7 +289,7 @@ const AdminDashboard = () => {
                   </tbody>
                 </table>
               </div>
-              {complaints.length === 0 && (
+              {(!Array.isArray(complaints) || complaints.length === 0) && (
                 <div className="text-center py-8 text-gray-500">
                   <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                   <p>No complaints found</p>
