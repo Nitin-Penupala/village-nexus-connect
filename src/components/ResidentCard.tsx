@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Phone, Mail, Home, Calendar, MoreVertical, Edit, Trash2, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,14 +12,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 import EditResidentDialog from "./EditResidentDialog";
 
-const ResidentCard = ({ resident, onUpdate, onDelete }) => {
+interface Resident {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  unit: string;
+  building: string;
+  moveInDate: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  avatar?: string;
+}
+
+interface ResidentCardProps {
+  resident: Resident;
+  onUpdate: (resident: Resident) => void;
+  onDelete: (id: number) => void;
+}
+
+const ResidentCard = ({ resident, onUpdate, onDelete }: ResidentCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const getInitials = (name) => {
+  const getInitials = (name: string): string => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

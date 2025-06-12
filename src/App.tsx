@@ -13,7 +13,7 @@ import { SidebarProvider } from "./contexts/SidebarContext";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = (): JSX.Element => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
