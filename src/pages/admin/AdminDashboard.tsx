@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { emergencyContactService } from "@/services/emergencyContactService";
 
-const EmergencyContacts = () => {
+const AdminDashboard = () => {
   const { isExpanded, setIsExpanded } = useSidebar();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const currentUser = {
     name: "Sarah Johnson",
@@ -59,6 +60,39 @@ const EmergencyContacts = () => {
       toast({ title: "Error", description: "Failed to save contact", variant: "destructive" });
     }
   };
+
+  const sidebarItems = [
+    { 
+      icon: Home, 
+      label: "Dashboard", 
+      onClick: () => navigate('/admin/dashboard'),
+      active: location.pathname === '/admin/dashboard'
+    },
+    { 
+      icon: Phone, 
+      label: "Emergency Contacts", 
+      onClick: () => navigate('/admin/emergency-contacts'),
+      active: location.pathname === '/admin/emergency-contacts'
+    },
+    { 
+      icon: Settings, 
+      label: "Maintenance", 
+      onClick: () => navigate('/admin/maintenance'),
+      active: location.pathname === '/admin/maintenance'
+    },
+    { 
+      icon: Users, 
+      label: "Apartment Residents", 
+      onClick: () => navigate('/admin/apartment-residents'),
+      active: location.pathname.startsWith('/admin/apartment-residents')
+    },
+    { 
+      icon: Shield, 
+      label: "Admin Settings", 
+      onClick: () => navigate('/admin/settings'),
+      active: location.pathname === '/admin/settings'
+    }
+  ];
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -115,97 +149,27 @@ const EmergencyContacts = () => {
         {/* Navigation - Updated to match Index.jsx structure */}
         <nav style={{ flex: 1, padding: '16px' }}>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li>
-              <Button
-                variant="ghost"
-                style={{
-                  width: "100%",
-                  justifyContent: isExpanded ? "flex-start" : "center",
-                  borderRadius: 8,
-                  padding: "10px",
-                  color: "#374151",
-                  fontWeight: 500,
-                  marginBottom: 4,
-                }}
-                onClick={() => navigate('/')}
-              >
-                <Home style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
-                {isExpanded && "Home"}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="ghost"
-                style={{
-                  width: "100%",
-                  justifyContent: isExpanded ? "flex-start" : "center",
-                  borderRadius: 8,
-                  padding: "10px",
-                  background: "#eef2ff",
-                  color: "#2563eb",
-                  fontWeight: 600,
-                  marginBottom: 4,
-                }}
-                onClick={() => navigate('/emergency-contacts')}
-              >
-                <Phone style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
-                {isExpanded && "Emergency Contacts"}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="ghost"
-                style={{
-                  width: "100%",
-                  justifyContent: isExpanded ? "flex-start" : "center",
-                  borderRadius: 8,
-                  padding: "10px",
-                  color: "#374151",
-                  fontWeight: 500,
-                  marginBottom: 4,
-                }}
-                onClick={() => navigate('/maintenance')}
-              >
-                <Wrench style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
-                {isExpanded && "Maintenance"}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="ghost"
-                style={{
-                  width: "100%",
-                  justifyContent: isExpanded ? "flex-start" : "center",
-                  borderRadius: 8,
-                  padding: "10px",
-                  color: "#374151",
-                  fontWeight: 500,
-                  marginBottom: 4,
-                }}
-                onClick={() => navigate('/residents')}
-              >
-                <Users style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
-                {isExpanded && "Apartment Residents"}
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="ghost"
-                style={{
-                  width: "100%",
-                  justifyContent: isExpanded ? "flex-start" : "center",
-                  borderRadius: 8,
-                  padding: "10px",
-                  color: "#374151",
-                  fontWeight: 500,
-                  marginBottom: 4,
-                }}
-                onClick={() => navigate('/admin-login')}
-              >
-                <Shield style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
-                {isExpanded && "Admin Portal"}
-              </Button>
-            </li>
+            {sidebarItems.map((item, index) => (
+              <li key={index}>
+                <Button
+                  variant={item.active ? "solid" : "ghost"}
+                  style={{
+                    width: "100%",
+                    justifyContent: isExpanded ? "flex-start" : "center",
+                    borderRadius: 8,
+                    padding: "10px",
+                    color: item.active ? "#fff" : "#374151",
+                    backgroundColor: item.active ? "#2563eb" : "transparent",
+                    fontWeight: item.active ? 600 : 500,
+                    marginBottom: 4,
+                  }}
+                  onClick={item.onClick}
+                >
+                  <item.icon style={{ width: 20, height: 20, marginRight: isExpanded ? 12 : 0 }} />
+                  {isExpanded && item.label}
+                </Button>
+              </li>
+            ))}
           </ul>
         </nav>
 
@@ -407,4 +371,4 @@ const EmergencyContacts = () => {
   );
 };
 
-export default EmergencyContacts;
+export default AdminDashboard;

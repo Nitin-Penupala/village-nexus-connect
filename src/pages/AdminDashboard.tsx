@@ -1,11 +1,12 @@
-
 import { useState } from "react";
-import { Shield, Users, AlertTriangle, Settings, LogOut, FileText, Bell, Menu, Home, Phone } from "lucide-react";
+import { Shield, Users, AlertTriangle, Settings, LogOut, FileText, Bell, Menu, Home, Phone, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { complaintService } from "@/services/complaintService";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 
 interface Complaint {
   id: string;
@@ -27,6 +28,22 @@ const AdminDashboard = () => {
   
   const navigate = useNavigate();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [newStatus, setNewStatus] = useState<string>("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [showNewComplaintModal, setShowNewComplaintModal] = useState(false);
+  const [newComplaint, setNewComplaint] = useState({
+    title: '',
+    description: '',
+    priority: 'medium',
+    unit: '',
+    building: '',
+    residentName: '',
+    residentEmail: '',
+    category: '',
+  });
+  const queryClient = useQueryClient();
 
   // Fetch complaints data with proper error handling
   const { data: complaints = [], isLoading, error } = useQuery<Complaint[]>({
@@ -88,9 +105,154 @@ const AdminDashboard = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
+  const handleViewDetails = (complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setShowDetailsModal(true);
+  };
+
+  const handleStatusUpdate = async (newStatusValue: string) => {
+    if (newStatusValue === selectedComplaint?.status) return;
+    setNewStatus(newStatusValue);
+  };
+
+  const submitStatusUpdate = async () => {
+    if (!selectedComplaint || !newStatus) return;
+    
+    setIsUpdating(true);
+    try {
+      const response = await complaintService.updateComplaintStatus(selectedComplaint.id, newStatus);
+      if (!response) throw new Error('Failed to update status');
+      
+      // Update local state
+      await queryClient.invalidateQueries(['complaints']);
+      setSelectedComplaint({ ...selectedComplaint, status: newStatus });
+      setShowDetailsModal(false);
+      setNewStatus("");
+      toast({
+        title: "Status Updated",
+        description: "Complaint status has been successfully updated.",
+        variant: "default",
+      });
+    } catch (error: any) {
+      console.error('Status update error:', error);
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update complaint status",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCreateComplaint = async () => {
+    try {
+      await complaintService.createComplaint({
+        ...newComplaint,
+        status: 'pending',
+        createdDate: new Date().toISOString(),
+      });
+      
+      await queryClient.invalidateQueries(['complaints']);
+      setShowNewComplaintModal(false);
+      setNewComplaint({ title: '', description: '', priority: 'medium', unit: '', building: '', residentName: '', residentEmail: '', category: '' });
+      toast({
+        title: "Success",
+        description: "Complaint created successfully",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create complaint",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const renderNewComplaintModal = () => (
+    <Dialog open={showNewComplaintModal} onOpenChange={setShowNewComplaintModal}>
+      <DialogContent className="bg-white p-6 rounded-lg shadow-lg max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Create New Complaint</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-500">Title</label>
+              <input
+                type="text"
+                value={newComplaint.title}
+                onChange={(e) => setNewComplaint({...newComplaint, title: e.target.value})}
+                className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500">Priority</label>
+              <select
+                value={newComplaint.priority}
+                onChange={(e) => setNewComplaint({...newComplaint, priority: e.target.value})}
+                className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-500">Description</label>
+            <textarea
+              value={newComplaint.description}
+              onChange={(e) => setNewComplaint({...newComplaint, description: e.target.value})}
+              className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              rows={3}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-500">Unit</label>
+              <input
+                type="text"
+                value={newComplaint.unit}
+                onChange={(e) => setNewComplaint({...newComplaint, unit: e.target.value})}
+                className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500">Building</label>
+              <input
+                type="text"
+                value={newComplaint.building}
+                onChange={(e) => setNewComplaint({...newComplaint, building: e.target.value})}
+                className="mt-1 w-full rounded-md border border-gray-300 p-2"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowNewComplaintModal(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleCreateComplaint}
+              disabled={!newComplaint.title || !newComplaint.description}
+            >
+              Create Complaint
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   const sidebarItems = [
     { icon: Home, label: "Home", active: true },
-    { icon: Phone, label: "Emergency Contacts", onClick: () => navigate('/emergency-contacts') },
+    { 
+      icon: Phone, 
+      label: "Emergency Contacts", 
+      onClick: () => navigate('/emergency-contacts'),
+      active: false
+    },
     { icon: Settings, label: "Maintenance" },
     { icon: Users, label: "Apartment Residents" },
     { icon: Shield, label: "Admin Portal" },
@@ -235,10 +397,20 @@ const AdminDashboard = () => {
           {/* Recent Complaints Section */}
           <Card className="shadow-md">
             <CardHeader className="bg-gray-50 border-b px-6 py-4">
-              <CardTitle className="flex items-center space-x-2 text-gray-800 text-lg">
-                <AlertTriangle className="h-5 w-5 text-orange-600" />
-                <span>Recent Complaints</span>
-              </CardTitle>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="h-5 w-5 text-orange-600" />
+                  <span>Recent Complaints</span>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setShowNewComplaintModal(true)}
+                  className="flex items-center space-x-2"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  <span>New Complaint</span>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
@@ -280,7 +452,12 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="py-4 px-6">
-                          <Button size="sm" variant="outline" className="text-xs hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-xs hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+                            onClick={() => handleViewDetails(complaint)}
+                          >
                             View Details
                           </Button>
                         </td>
@@ -297,6 +474,64 @@ const AdminDashboard = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Complaint Details Modal */}
+          <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+            <DialogContent className="bg-white p-6 rounded-lg shadow-lg max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Complaint Details</DialogTitle>
+              </DialogHeader>
+              {selectedComplaint && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Title</label>
+                      <p className="mt-1">{selectedComplaint.title}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Status</label>
+                      <p className="mt-1">{selectedComplaint.status}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Description</label>
+                    <p className="mt-1">{selectedComplaint.description}</p>
+                  </div>
+                  <div className="border-t pt-4">
+                    <label className="text-sm font-medium text-gray-500 block mb-2">Update Status</label>
+                    <div className="flex gap-2">
+                      {['pending', 'in-progress', 'resolved', 'rejected'].map((status) => (
+                        <Button
+                          key={status}
+                          variant={newStatus === status ? "default" : "outline"}
+                          onClick={() => handleStatusUpdate(status)}
+                          className="capitalize"
+                        >
+                          {status}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex justify-end mt-4">
+                      <Button
+                        onClick={submitStatusUpdate}
+                        disabled={!newStatus || newStatus === selectedComplaint?.status || isUpdating}
+                        className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                          (!newStatus || newStatus === selectedComplaint?.status || isUpdating) 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : ''
+                        }`}
+                      >
+                        {isUpdating ? 'Updating...' : newStatus ? 'Save Changes' : 'Select a status'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+
+          {/* New Complaint Modal */}
+          {renderNewComplaintModal()}
         </div>
       </div>
     </div>
