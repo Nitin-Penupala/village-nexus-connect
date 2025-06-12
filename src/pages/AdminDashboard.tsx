@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Shield, Users, AlertTriangle, Settings, LogOut, FileText, Bell, Menu, Home, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,12 +6,27 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { complaintService } from "@/services/complaintService";
 
+interface Complaint {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  category: string;
+  createdDate: string;
+  residentName: string;
+  unit: string;
+  building: string;
+  residentEmail: string;
+  assignedTo: string;
+}
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-  // Fetch complaints data
-  const { data: complaints = [], isLoading, error } = useQuery({
+  // Fetch complaints data with proper typing
+  const { data: complaints = [], isLoading, error } = useQuery<Complaint[]>({
     queryKey: ['complaints'],
     queryFn: complaintService.getAllComplaints,
   });
