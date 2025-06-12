@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Users, Home, Phone, Mail, AlertCircle, Shield, Wrench, LogOut, ChevronLeft, ChevronRight, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { emergencyContactService } from "@/services/emergencyContactService";
 
 const EmergencyContacts = () => {
   const { isExpanded, setIsExpanded } = useSidebar();
@@ -16,43 +17,26 @@ const EmergencyContacts = () => {
     email: "sarah.johnson@email.com"
   };
 
-  const emergencyContacts = [
-    {
-      name: "Building Security",
-      phone: "+1 (555) 123-4567",
-      email: "security@building.com",
-      department: "Security",
-      available: "24/7"
-    },
-    {
-      name: "Maintenance Emergency",
-      phone: "+1 (555) 234-5678", 
-      email: "maintenance@building.com",
-      department: "Maintenance",
-      available: "24/7"
-    },
-    {
-      name: "Fire Department",
-      phone: "911",
-      email: "emergency@fire.gov",
-      department: "Emergency",
-      available: "24/7"
-    },
-    {
-      name: "Building Manager",
-      phone: "+1 (555) 345-6789",
-      email: "manager@building.com", 
-      department: "Management",
-      available: "9 AM - 6 PM"
-    },
-    {
-      name: "Medical Emergency",
-      phone: "911",
-      email: "emergency@medical.gov",
-      department: "Emergency", 
-      available: "24/7"
-    }
-  ];
+  const [contacts, setContacts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        setIsLoading(true);
+        const data = await emergencyContactService.getAllContacts();
+        setContacts(data);
+      } catch (err) {
+        setError('Failed to load emergency contacts');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadContacts();
+  }, []);
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -268,7 +252,7 @@ const EmergencyContacts = () => {
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
             gap: '24px' 
           }}>
-            {emergencyContacts.map((contact, index) => (
+            {contacts.map((contact, index) => (
               <Card key={index} style={{ 
                 backgroundColor: "rgba(255, 255, 255, 0.8)", 
                 backdropFilter: "blur(4px)", 
