@@ -53,7 +53,7 @@ const AdminDashboard = () => {
       try {
         const result = await complaintService.getAllComplaints();
         console.log("Complaints fetched successfully:", result);
-        return result || [];
+        return Array.isArray(result) ? result : [];
       } catch (err) {
         console.error("Error fetching complaints:", err);
         return [];
@@ -97,7 +97,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     console.log("Logout clicked");
-    navigate('/admin-login');
+    navigate('/');
   };
 
   const toggleSidebar = () => {
@@ -246,16 +246,19 @@ const AdminDashboard = () => {
   );
 
   const sidebarItems = [
-    { icon: Home, label: "Home", active: true },
+    { icon: Home, label: "Dashboard", active: true },
     { 
       icon: Phone, 
       label: "Emergency Contacts", 
       onClick: () => navigate('/emergency-contacts'),
       active: false
     },
-    { icon: Settings, label: "Maintenance" },
-    { icon: Users, label: "Apartment Residents" },
-    { icon: Shield, label: "Admin Portal" },
+    { 
+      icon: Users, 
+      label: "Apartment Residents", 
+      onClick: () => navigate('/admin/residents'),
+      active: false
+    },
   ];
 
   if (error) {
