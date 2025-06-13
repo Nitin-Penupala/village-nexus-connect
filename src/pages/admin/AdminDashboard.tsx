@@ -53,8 +53,7 @@ const AdminDashboard = () => {
 
   const handleSave = async () => {
     try {
-      // API call would go here
-      await queryClient.invalidateQueries(['emergencyContacts']);
+      await queryClient.invalidateQueries({ queryKey: ['emergencyContacts'] });
       setShowAddModal(false);
       setEditingContact(null);
       toast({ title: "Success", description: "Contact saved successfully" });
@@ -67,14 +66,14 @@ const AdminDashboard = () => {
     { 
       icon: Home, 
       label: "Dashboard", 
-      onClick: () => navigate('/admin/dashboard'),
-      active: location.pathname === '/admin/dashboard'
+      onClick: () => navigate('/admin-dashboard'),
+      active: location.pathname === '/admin-dashboard' || location.pathname === '/'
     },
     { 
       icon: Phone, 
       label: "Emergency Contacts", 
-      onClick: () => navigate('/admin/emergency-contacts'),
-      active: location.pathname === '/admin/emergency-contacts'
+      onClick: () => navigate('/emergency-contacts'),
+      active: location.pathname === '/emergency-contacts'
     },
     { 
       icon: Settings, 
@@ -85,8 +84,8 @@ const AdminDashboard = () => {
     { 
       icon: Users, 
       label: "Apartment Residents", 
-      onClick: () => navigate('/admin/apartment-residents'),
-      active: location.pathname.startsWith('/admin/apartment-residents')
+      onClick: () => navigate('/admin/residents'),
+      active: location.pathname.startsWith('/admin/residents')
     },
     { 
       icon: Shield, 
@@ -148,16 +147,15 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {/* Navigation - Updated to match Index.jsx structure */}
         <nav style={{ flex: 1, padding: '16px' }}>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {sidebarItems.map((item, index) => (
               <li key={index}>
                 <Button
-                  variant={item.active ? "solid" : "ghost"}
+                  variant={item.active ? "default" : "ghost"}
                   style={{
                     width: "100%",
-                    justifyContent: isExpanded ? "flex-start" : "center",
+                    justifyContent: isExpected ? "flex-start" : "center",
                     borderRadius: 8,
                     padding: "10px",
                     color: item.active ? "#fff" : "#374151",
@@ -175,7 +173,6 @@ const AdminDashboard = () => {
           </ul>
         </nav>
 
-        {/* Logout section */}
         <div style={{ padding: '16px', borderTop: '1px solid #e5e7eb' }}>
           <Button
             variant="ghost"
@@ -195,7 +192,6 @@ const AdminDashboard = () => {
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main style={{
         marginLeft: isExpanded ? '280px' : '0px',
         flex: 1,
@@ -204,7 +200,6 @@ const AdminDashboard = () => {
         padding: '32px',
         transition: 'margin-left 0.3s ease'
       }}>
-        {/* Header with Logo and Title */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -226,7 +221,7 @@ const AdminDashboard = () => {
                   Fix My Flat
                 </h1>
                 <p style={{ fontSize: '14px', color: '#6b7280' }}>
-                  Emergency Contacts
+                  Admin Dashboard
                 </p>
               </div>
             </div>
@@ -234,7 +229,6 @@ const AdminDashboard = () => {
         </div>
 
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Emergency Contacts Grid */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 

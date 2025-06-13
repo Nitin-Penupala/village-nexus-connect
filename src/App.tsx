@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
 import AdminDashboard from "./pages/AdminDashboard";
 import EmergencyContacts from "./pages/EmergencyContacts";
 import NotFound from "./pages/NotFound";
@@ -21,7 +20,7 @@ const App = (): JSX.Element => (
       <SidebarProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<AdminDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/emergency-contacts" element={<EmergencyContacts />} />
             <Route path="/admin/residents" element={<ApartmentResidents />} />
