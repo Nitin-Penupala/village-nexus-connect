@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Search, Users, Home, Phone, Mail, AlertCircle, Shield, Wrench, LogOut, ChevronLeft, ChevronRight, Menu, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -97,7 +98,6 @@ const AdminDashboard = () => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Fixed Sidebar - Same structure as Index.jsx */}
       <aside style={{
         width: isExpanded ? '280px' : '0px',
         position: 'fixed',
@@ -155,7 +155,7 @@ const AdminDashboard = () => {
                   variant={item.active ? "default" : "ghost"}
                   style={{
                     width: "100%",
-                    justifyContent: isExpected ? "flex-start" : "center",
+                    justifyContent: isExpanded ? "flex-start" : "center",
                     borderRadius: 8,
                     padding: "10px",
                     color: item.active ? "#fff" : "#374151",
