@@ -1,4 +1,3 @@
-import axios from 'axios';
 
 export const complaintService = {
   getAllComplaints: async () => {
@@ -38,7 +37,7 @@ export const complaintService = {
       },
       body: JSON.stringify({
         ...complaint,
-        id: Math.random().toString(36).substr(2, 9), // Generate a random ID
+        id: Math.random().toString(36).substr(2, 9),
         status: 'pending',
         createdDate: new Date().toISOString(),
       }),
@@ -51,3 +50,7 @@ export const complaintService = {
     return response.json();
   },
 };
+
+// Export individual functions for backward compatibility
+export const fetchComplaints = complaintService.getAllComplaints;
+export const updateComplaintStatus = complaintService.updateComplaintStatus;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Users, Home, Phone, Mail, AlertCircle, Shield, Wrench, LogOut, ChevronLeft, ChevronRight, Menu, User } from "lucide-react";
+import { Search, Users, Home, Phone, Mail, AlertCircle, Shield, Wrench, LogOut, ChevronLeft, ChevronRight, Menu, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -7,11 +7,13 @@ import { toast } from "@/components/ui/use-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { emergencyContactService } from "@/services/emergencyContactService";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AdminDashboard = () => {
   const { isExpanded, setIsExpanded } = useSidebar();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
   const currentUser = {
     name: "Sarah Johnson",

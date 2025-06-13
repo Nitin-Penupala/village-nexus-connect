@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { PlusCircle, Phone, Mail, Shield, Edit, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,34 @@ import { useNavigate } from "react-router-dom";
 import { emergencyContactService } from "@/services/emergencyContactService";
 
 const EmergencyContacts = () => {
-  // ...existing state code...
+  const [contacts, setContacts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingContact, setEditingContact] = useState(null);
+  const [newContact, setNewContact] = useState({
+    name: '',
+    role: '',
+    phone: '',
+    available: '24/7',
+  });
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        setIsLoading(true);
+        const data = await emergencyContactService.getAllContacts();
+        setContacts(data);
+      } catch (err) {
+        setError('Failed to load emergency contacts');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadContacts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,8 +94,68 @@ const EmergencyContacts = () => {
           ))}
         </div>
 
-        {/* Modal stays the same */}
-        {/* ...existing modal code... */}
+        {/* Modal */}
+        <Dialog open={showAddModal || !!editingContact} onOpenChange={() => {
+          setShowAddModal(false);
+          setEditingContact(null);
+        }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editingContact ? 'Edit Contact' : 'Add New Contact'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Name</label>
+                <input
+                  type="text"
+                  className="w-full mt-1 rounded-md border p-2"
+                  value={editingContact?.name || newContact.name}
+                  onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Role</label>
+                <input
+                  type="text"
+                  className="w-full mt-1 rounded-md border p-2"
+                  value={editingContact?.role || newContact.role}
+                  onChange={(e) => setNewContact({ ...newContact, role: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Phone</label>
+                <input
+                  type="tel"
+                  className="w-full mt-1 rounded-md border p-2"
+                  value={editingContact?.phone || newContact.phone}
+                  onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Availability</label>
+                <input
+                  type="text"
+                  className="w-full mt-1 rounded-md border p-2"
+                  value={editingContact?.available || newContact.available}
+                  onChange={(e) => setNewContact({ ...newContact, available: e.target.value })}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => {
+                  setShowAddModal(false);
+                  setEditingContact(null);
+                }}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  // Handle save logic here
+                  setShowAddModal(false);
+                  setEditingContact(null);
+                }}>Save</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

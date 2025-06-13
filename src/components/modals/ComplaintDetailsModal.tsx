@@ -1,5 +1,8 @@
+
 import React from 'react';
-import { Modal, Button, Select } from 'antd';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Complaint } from '../../types/complaint';
 
 interface ComplaintDetailsModalProps {
@@ -22,38 +25,39 @@ const ComplaintDetailsModal: React.FC<ComplaintDetailsModalProps> = ({
   };
 
   return (
-    <Modal
-      title="Complaint Details"
-      open={isVisible}
-      onCancel={onClose}
-      footer={[
-        <Button key="close" onClick={onClose}>
-          Close
-        </Button>
-      ]}
-    >
-      {complaint && (
-        <div>
-          <h3>{complaint.title}</h3>
-          <p><strong>Description:</strong></p>
-          <p>{complaint.description}</p>
-          <div className="mt-4">
-            <p><strong>Current Status:</strong></p>
-            <Select
-              defaultValue={complaint.status}
-              style={{ width: 200 }}
-              onChange={handleStatusChange}
-              options={[
-                { value: 'pending', label: 'Pending' },
-                { value: 'in-progress', label: 'In Progress' },
-                { value: 'resolved', label: 'Resolved' },
-                { value: 'rejected', label: 'Rejected' },
-              ]}
-            />
+    <Dialog open={isVisible} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Complaint Details</DialogTitle>
+        </DialogHeader>
+        {complaint && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">{complaint.title}</h3>
+            <div>
+              <p className="font-medium">Description:</p>
+              <p className="text-gray-600">{complaint.description}</p>
+            </div>
+            <div>
+              <p className="font-medium mb-2">Current Status:</p>
+              <Select defaultValue={complaint.status} onValueChange={handleStatusChange}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="resolved">Resolved</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={onClose}>Close</Button>
+            </div>
           </div>
-        </div>
-      )}
-    </Modal>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 
